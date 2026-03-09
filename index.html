@@ -1,162 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>A Message In The Sky</title>
+<meta charset="UTF-8">
+<title>A Message From The Universe</title>
 
 <style>
 
 body{
 margin:0;
 background:black;
-color:white;
-font-family:Courier New, monospace;
 overflow:hidden;
+font-family:Courier New, monospace;
+color:white;
 text-align:center;
 }
 
-#text{
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:0;
+}
+
+#container{
 position:absolute;
-top:20%;
-width:100%;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:90%;
+z-index:2;
+}
+
+#text{
 font-size:28px;
+letter-spacing:2px;
+min-height:40px;
+}
+
+#name{
+display:none;
+font-size:60px;
+color:#ff4d6d;
+text-shadow:0 0 20px #ff4d6d;
+animation:glow 2s infinite alternate;
+margin-top:20px;
+}
+
+@keyframes glow{
+from{ text-shadow:0 0 10px #ff4d6d }
+to{ text-shadow:0 0 40px #ff4d6d }
+}
+
+#heart{
+display:none;
+font-size:50px;
+animation:beat 1s infinite;
+margin-top:20px;
+}
+
+@keyframes beat{
+0%{transform:scale(1)}
+50%{transform:scale(1.3)}
+100%{transform:scale(1)}
 }
 
 #final{
 display:none;
-position:absolute;
-top:50%;
-width:100%;
-font-size:34px;
-color:#ff6b81;
-}
-
-canvas{
-position:absolute;
-top:0;
-left:0;
+font-size:24px;
+margin-top:30px;
+line-height:1.6;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <canvas id="stars"></canvas>
 
+<div id="container">
 <div id="text"></div>
+<div id="name">BABYBOO</div>
+<div id="heart">❤️</div>
 
 <div id="final">
 Good night Babyboo 🌙<br><br>
-Somewhere under this same sky,<br>
-someone is smiling because of you.<br><br>
-Sleep well.
+Among billions of stars in the universe,<br>
+one of them reminded me of you tonight.<br><br>
+Sleep well.<br>
+Someone is thinking about you.
+</div>
 </div>
 
 <script>
 
-const canvas = document.getElementById("stars");
-const ctx = canvas.getContext("2d");
+// ===== STARFIELD =====
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+const canvas = document.getElementById("stars")
+const ctx = canvas.getContext("2d")
 
-let stars = [];
+function resize(){
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
+}
+
+resize()
+window.addEventListener("resize",resize)
+
+let stars=[]
 
 for(let i=0;i<250;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-r:Math.random()*1.5,
-d:Math.random()*0.5
-});
+size:Math.random()*2,
+speed:Math.random()0.5+0.1
+})
 }
 
-function drawStars(){
+function animateStars(){
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-ctx.fillStyle="white";
+ctx.fillStyle="white"
 
 stars.forEach(s=>{
 
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
+ctx.beginPath()
+ctx.arc(s.x,s.y,s.size,0,Math.PI2)
+ctx.fill()
 
-s.y += s.d;
+s.y+=s.speed
 
 if(s.y>canvas.height){
-s.y=0;
+s.y=0
+s.x=Math.random()*canvas.width
 }
 
-});
+})
 
-requestAnimationFrame(drawStars);
+requestAnimationFrame(animateStars)
 
 }
 
-drawStars();
+animateStars()
 
+// ===== TYPING EFFECT =====
 
-// typing text
-
-let messages=[
-"Searching the sky...",
-"Looking for someone special...",
-"Signal found.",
-"Transmitting message..."
+const messages=[
+"Scanning the universe...",
+"Searching for someone special...",
+"Signal detected...",
+"Preparing message...",
+"Before you sleep tonight..."
 ]
 
-let i=0
-let j=0
-let current=""
+let messageIndex=0
+let charIndex=0
 
 function type(){
 
-if(j < messages[i].length){
+const textElement=document.getElementById("text")
 
-current += messages[i].charAt(j)
-document.getElementById("text").innerHTML=current
-j++
+if(charIndex < messages[messageIndex].length){
+
+textElement.innerHTML += messages[messageIndex].charAt(charIndex)
+charIndex++
+
 setTimeout(type,40)
 
 }else{
 
-setTimeout(next,1200)
+setTimeout(nextMessage,1500)
 
 }
 
 }
 
-function next(){
+function nextMessage(){
 
-i++
-j=0
-current=""
+messageIndex++
+charIndex=0
+document.getElementById("text").innerHTML=""
 
-if(i < messages.length){
+if(messageIndex < messages.length){
 
 type()
 
 }else{
 
-showName()
+reveal()
 
 }
 
 }
 
-function showName(){
-
-document.getElementById("text").innerHTML="⭐ BABYBOO ⭐"
-
-setTimeout(()=>{
+function reveal(){
 
 document.getElementById("text").style.display="none"
-document.getElementById("final").style.display="block"
+document.getElementById("name").style.display="block"
 
-},3000)
+setTimeout(()=>{
+document.getElementById("heart").style.display="block"
+},2000)
+
+setTimeout(()=>{
+document.getElementById("final").style.display="block"
+},4000)
 
 }
 
