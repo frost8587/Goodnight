@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A Message From The Universe</title>
 
 <style>
@@ -21,7 +22,7 @@ top:0;
 left:0;
 z-index:0;
 }
-
+ 
 #container{
 position:absolute;
 top:50%;
@@ -39,21 +40,21 @@ min-height:40px;
 
 #name{
 display:none;
-font-size:60px;
+font-size:70px;
 color:#ff4d6d;
-text-shadow:0 0 20px #ff4d6d;
+text-shadow:0 0 25px #ff4d6d;
 animation:glow 2s infinite alternate;
 margin-top:20px;
 }
 
 @keyframes glow{
 from{ text-shadow:0 0 10px #ff4d6d }
-to{ text-shadow:0 0 40px #ff4d6d }
+to{ text-shadow:0 0 50px #ff4d6d }
 }
 
 #heart{
 display:none;
-font-size:50px;
+font-size:60px;
 animation:beat 1s infinite;
 margin-top:20px;
 }
@@ -71,6 +72,19 @@ margin-top:30px;
 line-height:1.6;
 }
 
+#musicBtn{
+position:fixed;
+bottom:20px;
+right:20px;
+padding:10px 16px;
+background:#ff4d6d;
+border:none;
+border-radius:20px;
+color:white;
+cursor:pointer;
+z-index:3;
+}
+
 </style>
 </head>
 
@@ -80,7 +94,9 @@ line-height:1.6;
 
 <div id="container">
 <div id="text"></div>
+
 <div id="name">BABYBOO</div>
+
 <div id="heart">❤️</div>
 
 <div id="final">
@@ -92,33 +108,55 @@ Someone is thinking about you.
 </div>
 </div>
 
+<button id="musicBtn">🎵 Play Music</button>
+
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c7e1d42f4.mp3" type="audio/mpeg">
+</audio>
+
 <script>
 
-// ===== STARFIELD =====
+// CANVAS
 
-const canvas = document.getElementById("stars")
-const ctx = canvas.getContext("2d")
+const canvas=document.getElementById("stars")
+const ctx=canvas.getContext("2d")
 
 function resize(){
-canvas.width = window.innerWidth
-canvas.height = window.innerHeight
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
 }
 
 resize()
 window.addEventListener("resize",resize)
 
 let stars=[]
+let shootingStars=[]
 
-for(let i=0;i<250;i++){
+// stars
+for(let i=0;i<300;i++){
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 size:Math.random()*2,
-speed:Math.random()0.5+0.1
+speed:Math.random()*0.5+0.1
 })
 }
 
-function animateStars(){
+// shooting star
+function createShootingStar(){
+
+shootingStars.push({
+x:Math.random()*canvas.width,
+y:0,
+len:Math.random()*80+10,
+speed:Math.random()*10+6
+})
+
+}
+
+setInterval(createShootingStar,4000)
+
+function animate(){
 
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
@@ -127,7 +165,7 @@ ctx.fillStyle="white"
 stars.forEach(s=>{
 
 ctx.beginPath()
-ctx.arc(s.x,s.y,s.size,0,Math.PI2)
+ctx.arc(s.x,s.y,s.size,0,Math.PI*2)
 ctx.fill()
 
 s.y+=s.speed
@@ -139,13 +177,32 @@ s.x=Math.random()*canvas.width
 
 })
 
-requestAnimationFrame(animateStars)
+ctx.strokeStyle="white"
+ctx.lineWidth=2
+
+shootingStars.forEach((s,index)=>{
+
+ctx.beginPath()
+ctx.moveTo(s.x,s.y)
+ctx.lineTo(s.x+s.len,s.y+s.len)
+ctx.stroke()
+
+s.x+=s.speed
+s.y+=s.speed
+
+if(s.x>canvas.width || s.y>canvas.height){
+shootingStars.splice(index,1)
+}
+
+})
+
+requestAnimationFrame(animate)
 
 }
 
-animateStars()
+animate()
 
-// ===== TYPING EFFECT =====
+// TYPING EFFECT
 
 const messages=[
 "Scanning the universe...",
@@ -155,35 +212,35 @@ const messages=[
 "Before you sleep tonight..."
 ]
 
-let messageIndex=0
-let charIndex=0
+let m=0
+let c=0
 
 function type(){
 
-const textElement=document.getElementById("text")
+const text=document.getElementById("text")
 
-if(charIndex < messages[messageIndex].length){
+if(c < messages[m].length){
 
-textElement.innerHTML += messages[messageIndex].charAt(charIndex)
-charIndex++
+text.innerHTML+=messages[m].charAt(c)
+c++
 
 setTimeout(type,40)
 
 }else{
 
-setTimeout(nextMessage,1500)
+setTimeout(next,1500)
 
 }
 
 }
 
-function nextMessage(){
+function next(){
 
-messageIndex++
-charIndex=0
+m++
+c=0
 document.getElementById("text").innerHTML=""
 
-if(messageIndex < messages.length){
+if(m < messages.length){
 
 type()
 
@@ -211,6 +268,16 @@ document.getElementById("final").style.display="block"
 }
 
 type()
+
+// MUSIC
+
+const music=document.getElementById("music")
+const btn=document.getElementById("musicBtn")
+
+btn.onclick=()=>{
+music.play()
+btn.innerHTML="🎶 Playing"
+}
 
 </script>
 
